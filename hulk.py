@@ -28,7 +28,7 @@ class Hulk(plugins.Plugin):
         while self.running:
             i += 1
             if i % 10 == 0:
-                display.set('status', 'HULK ANGRY')
+                display.set('status', 'HULK SMASH!!')
             try:
                 agent.run("wifi.deauth *")
             except Exception:
