@@ -57,7 +57,7 @@ class Viz(plugins.Plugin):
     __version__ = "0.1.0"
     __license__ = "GPL3"
     __description__ = ""
-    __dependencies__ = ['plotly', 'pandas', 'flask', 'nx']
+    __dependencies__ = ['plotly', 'pandas', 'flask', 'networkx']
 
     def __init__(self):
         self.options = dict()
