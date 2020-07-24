@@ -82,6 +82,10 @@ class Viz(plugins.Plugin):
                 graph.add_node(cname)
                 graph.add_edge(name, cname)
 
+        pos = nx.spring_layout(graph)
+        for n, p in pos.items():
+            graph.node[n]['pos'] = p
+
         # convert edges
         edge_x = list()
         edge_y = list()
