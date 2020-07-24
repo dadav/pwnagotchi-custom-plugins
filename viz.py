@@ -4,8 +4,7 @@ import plotly
 import plotly.graph_objects as go
 import networkx as nx
 from pwnagotchi import plugins
-from flask import render_template_string
-from flask import abort
+from flask import render_template_string, abort, jsonify
 from threading import Lock
 
 TEMPLATE = """
@@ -170,6 +169,6 @@ class Viz(plugins.Plugin):
         if path == 'update':
             with self.lock:
                 g = Viz.create_graph(self.data)
-            return g
+            return jsonify(g)
 
         abort(404)
