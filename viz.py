@@ -38,7 +38,7 @@ TEMPLATE = """
 
         function loadGraphData() {
             var result = ajaxDataRenderer('/plugins/viz/update');
-            Plotly.newPlot('plot', result['data'], result['layout']);
+            Plotly.newPlot('plot', result);
         }
         loadGraphData();
         setInterval(loadGraphData, 5000);
@@ -53,7 +53,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.1.4"
+    __version__ = "0.1.5"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask', 'networkx']
@@ -69,7 +69,8 @@ class Viz(plugins.Plugin):
     @staticmethod
     def create_graph(data):
         if not data:
-            return {}
+            return {}, {}
+
         # create networkx graph
         graph = nx.Graph()
         for ap_data in data:
@@ -130,35 +131,7 @@ class Viz(plugins.Plugin):
                 ),
                 line_width=2))
 
-        # Customize layout
-        layout = go.Layout(
-            paper_bgcolor='rgba(0,0,0,0)',  # transparent background
-            plot_bgcolor='rgba(0,0,0,0)',  # transparent 2nd background
-            xaxis =  {'showgrid': False, 'zeroline': False},  # no gridlines
-            yaxis = {'showgrid': False, 'zeroline': False},  # no gridlines
-        )
-
-        # Create figure
-        fig = go.Figure(layout = layout)
-
-        # Add all edge traces
-        for trace in edge_trace:
-            fig.add_trace(trace)
-
-        # Add node trace
-        fig.add_trace(node_trace)
-
-        # Remove legend
-        fig.update_layout(showlegend = False)
-
-        # Remove tick labels
-        fig.update_xaxes(showticklabels = False)
-        fig.update_yaxes(showticklabels = False)
-
-        layout_json = json.dumps(layout, cls=plotly.utils.PlotlyJSONEncoder)
-        data_json = json.dumps((edge_trace, node_trace), cls=plotly.utils.PlotlyJSONEncoder)
-
-        return data_json, layout_json
+        return json.dumps((edge_trace, node_trace), cls=plotly.utils.PlotlyJSONEncoder)
 
 
     def on_unfiltered_ap_list(self, agent, data):
@@ -171,7 +144,7 @@ class Viz(plugins.Plugin):
 
         if path == 'update':
             with self.lock:
-                d, l = Viz.create_graph(self.data)
-                return jsonify({'data': d, 'layout': l})
+                g = Viz.create_graph(self.data)
+                return jsonify(g)
 
         abort(404)
