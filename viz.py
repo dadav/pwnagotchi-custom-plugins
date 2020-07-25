@@ -30,7 +30,7 @@ TEMPLATE = """
             url: url,
             dataType:"json",
             success: function(data) {
-                ret = data;
+                ret = JSON.parse(data);
             }
         });
         return ret;
@@ -40,8 +40,6 @@ TEMPLATE = """
             var data = ajaxDataRenderer('/plugins/viz/update');
             Plotly.newPlot('plot', data);
         }
-        var initData = {{plot | safe}};
-        Plotly.plot('plot', initData, {});
         loadGraphData();
         setInterval(loadGraphData, 5000);
     });
@@ -55,7 +53,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.1.1"
+    __version__ = "0.1.2"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask', 'networkx']
@@ -157,7 +155,8 @@ class Viz(plugins.Plugin):
         fig.update_xaxes(showticklabels = False)
         fig.update_yaxes(showticklabels = False)
 
-        return json.dumps((edge_trace, node_trace), cls=plotly.utils.PlotlyJSONEncoder)
+        return json.dumps((fig), cls=plotly.utils.PlotlyJSONEncoder)
+        # return json.dumps((edge_trace, node_trace), cls=plotly.utils.PlotlyJSONEncoder)
 
 
     def on_unfiltered_ap_list(self, agent, data):
@@ -166,7 +165,7 @@ class Viz(plugins.Plugin):
 
     def on_webhook(self, path, request):
         if not path or path == "/":
-            return render_template_string(TEMPLATE, plot = Viz.create_graph(self.data))
+            return render_template_string(TEMPLATE)
 
         if path == 'update':
             with self.lock:
