@@ -2,9 +2,8 @@ import logging
 import json
 import plotly
 import plotly.graph_objects as go
-from random import random, choice
+import random
 from math import pi, cos, sin
-from plotly.validators.scatter.marker import SymbolValidator
 from pwnagotchi import plugins
 from flask import render_template_string, abort, jsonify
 from threading import Lock
@@ -75,7 +74,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.2.7"
+    __version__ = "0.2.8"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -127,13 +126,15 @@ class Viz(plugins.Plugin):
 
     @staticmethod
     def lookup_color(node):
+        random.seed(node)
         if node not in Viz.COLOR_MEMORY:
-            Viz.COLOR_MEMORY[node] = choice(Viz.COLORS)
+            Viz.COLOR_MEMORY[node] = random.choice(Viz.COLORS)
         return Viz.COLOR_MEMORY[node]
 
     @staticmethod
-    def random_pos(x0 ,y0, r):
-        t = 2 * pi * random()
+    def random_pos(name, x0 ,y0, r):
+        random.seed(name)
+        t = 2 * pi * random.random()
         x = r * cos(t)
         y = r * sin(t)
         return x+x0, y+y0
@@ -167,7 +168,7 @@ class Viz(plugins.Plugin):
             for c in ap_data['clients']:
                 # node
                 cname = c['hostname'] or c['vendor'] or c['mac']
-                xx, yy = Viz.random_pos(x,y,3)
+                xx, yy = Viz.random_pos(cname, x,y,3)
                 node_x.append(xx)
                 node_y.append(yy)
                 node_text.append(cname)
