@@ -3,7 +3,6 @@ import json
 import plotly
 import plotly.graph_objects as go
 from plotly.validators.scatter.marker import SymbolValidator
-import networkx as nx
 from pwnagotchi import plugins
 from flask import render_template_string, abort, jsonify
 from threading import Lock
@@ -54,10 +53,10 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.1.6"
+    __version__ = "0.1.7"
     __license__ = "GPL3"
     __description__ = ""
-    __dependencies__ = ['plotly', 'pandas', 'flask', 'networkx']
+    __dependencies__ = ['plotly', 'pandas', 'flask']
 
     def __init__(self):
         self.options = dict()
@@ -72,37 +71,40 @@ class Viz(plugins.Plugin):
         if not data:
             return {}
 
-        symbols = list()
-        raw_symbols = SymbolValidator().values
-        # create networkx graph
-        graph = nx.Graph()
-        for ap_data in data:
-            name = ap_data['hostname'] or ap_data['mac']
-            graph.add_node(name, node_type='station')
-            symbols.append(raw_symbols[201])
-
-            for c in ap_data['clients']:
-                cname = c['hostname'] or c['mac']
-                symbols.append(raw_symbols[0])
-                graph.add_node(cname)
-                graph.add_edge(name, cname)
-
-        pos = nx.spring_layout(graph)
-        for n, p in pos.items():
-            graph.nodes[n]['pos'] = p
-
-        # convert edges
+        node_text = list()
         edge_x = list()
         edge_y = list()
-        for edge in graph.edges():
-            x0, y0 = graph.nodes[edge[0]]['pos']
-            x1, y1 = graph.nodes[edge[1]]['pos']
-            edge_x.append(x0)
-            edge_x.append(x1)
-            edge_x.append(None)
-            edge_y.append(y0)
-            edge_y.append(y1)
-            edge_y.append(None)
+        node_x = list()
+        node_y = list()
+        node_symbols = list()
+
+        for ap_data in data:
+            name = ap_data['hostname'] or ap_data['mac']
+
+            # nodes
+            x, y = abs(ap_data['rssi']), len(ap_data['clients'])
+            node_x.append(x)
+            node_y.append(y)
+            node_text.append(name)
+            node_symbols.append('square')
+
+            for c in ap_data['clients']:
+                # node
+                cname = c['hostname'] or c['mac']
+                xx, yy = abs(c['rssi']), y
+                node_x.append(xx)
+                node_y.append(yy)
+                node_text.append(cname)
+                node_symbols.append('circle')
+
+                # edge
+                edge_x.append(x)
+                edge_x.append(x)
+                edge_x.append(None)
+                edge_y.append(yy)
+                edge_y.append(yy)
+                edge_y.append(None)
+
 
         edge_trace = go.Scatter(
             x=edge_x, y=edge_y,
@@ -110,19 +112,11 @@ class Viz(plugins.Plugin):
             hoverinfo='none',
             mode='lines')
 
-        # convert nodes
-        node_x = list()
-        node_y = list()
-        for node in graph.nodes():
-            x, y = graph.nodes[node]['pos']
-            node_x.append(x)
-            node_y.append(y)
-
         node_trace = go.Scatter(
             x=node_x, y=node_y,
             mode='markers',
-            marker_symbol=symbols,
-            hovertext=graph.nodes(),
+            marker_symbol=node_symbols,
+            hovertext=node_text,
             hoverinfo='text')
 
         return json.dumps((edge_trace, node_trace), cls=plotly.utils.PlotlyJSONEncoder)
