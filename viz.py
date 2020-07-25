@@ -2,6 +2,7 @@ import logging
 import json
 import plotly
 import plotly.graph_objects as go
+from plotly.validators.scatter.marker import SymbolValidator
 import networkx as nx
 from pwnagotchi import plugins
 from flask import render_template_string, abort, jsonify
@@ -41,7 +42,7 @@ TEMPLATE = """
             Plotly.newPlot('plot', result);
         }
         loadGraphData();
-        setInterval(loadGraphData, 5000);
+        setInterval(loadGraphData, 60000);
     });
 {% endblock %}
 
@@ -53,7 +54,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.1.5"
+    __version__ = "0.1.6"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask', 'networkx']
@@ -69,16 +70,20 @@ class Viz(plugins.Plugin):
     @staticmethod
     def create_graph(data):
         if not data:
-            return {}, {}
+            return {}
 
+        symbols = list()
+        raw_symbols = SymbolValidator().values
         # create networkx graph
         graph = nx.Graph()
         for ap_data in data:
             name = ap_data['hostname'] or ap_data['mac']
-            graph.add_node(name, size = len(ap_data['clients']))
+            graph.add_node(name, node_type='station')
+            symbols.append(raw_symbols[201])
 
             for c in ap_data['clients']:
                 cname = c['hostname'] or c['mac']
+                symbols.append(raw_symbols[0])
                 graph.add_node(cname)
                 graph.add_edge(name, cname)
 
@@ -116,20 +121,9 @@ class Viz(plugins.Plugin):
         node_trace = go.Scatter(
             x=node_x, y=node_y,
             mode='markers',
-            hoverinfo='text',
-            marker=dict(
-                showscale=True,
-                colorscale='YlGnBu',
-                reversescale=True,
-                color=[],
-                size=10,
-                colorbar=dict(
-                    thickness=15,
-                    title='Node Connections',
-                    xanchor='left',
-                    titleside='right'
-                ),
-                line_width=2))
+            marker_symbol=symbols,
+            hovertext=graph.nodes(),
+            hoverinfo='text')
 
         return json.dumps((edge_trace, node_trace), cls=plotly.utils.PlotlyJSONEncoder)
 
