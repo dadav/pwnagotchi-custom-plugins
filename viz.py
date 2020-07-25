@@ -39,6 +39,20 @@ TEMPLATE = """
         };
 
         function loadGraphData() {
+            var layout = {
+                title: 'Viz Map',
+                showlegend: false,
+                xaxis: {
+                    title: {
+                        text: 'Distance',
+                    },
+                },
+                yaxis: {
+                    title: {
+                        text: 'Channel',
+                    }
+                }
+            };
             var result = ajaxDataRenderer('/plugins/viz/update');
             Plotly.newPlot('plot', result);
         }
@@ -55,7 +69,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.1.8"
+    __version__ = "0.1.9"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask']
