@@ -37,8 +37,8 @@ TEMPLATE = """
         };
 
         function loadGraphData() {
-            var data = ajaxDataRenderer('/plugins/viz/update');
-            Plotly.newPlot('plot', data);
+            var result = ajaxDataRenderer('/plugins/viz/update');
+            Plotly.newPlot('plot', result['data'], result['layout']);
         }
         loadGraphData();
         setInterval(loadGraphData, 5000);
@@ -53,7 +53,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.1.2"
+    __version__ = "0.1.3"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask', 'networkx']
