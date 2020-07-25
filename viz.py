@@ -63,7 +63,7 @@ TEMPLATE = """
             }
         }
         loadGraphData();
-        setInterval(loadGraphData, 60000);
+        setInterval(loadGraphData, 30000);
     });
 {% endblock %}
 
@@ -75,7 +75,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.2.3"
+    __version__ = "0.2.4"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -137,7 +137,7 @@ class Viz(plugins.Plugin):
         t = 2 * pi * random()
         x = w * cos(t)
         y = w * sin(t)
-        return x+x0, y+y0
+        return max(x,15)+x0, max(y,15)+y0
 
     @staticmethod
     def create_graph(data):
@@ -162,7 +162,7 @@ class Viz(plugins.Plugin):
             node_y.append(y)
             node_text.append(name)
             node_symbols.append('square')
-            node_sizes.append(10 + len(ap_data['clients']))
+            node_sizes.append(15 + len(ap_data['clients']) * 3)
             node_colors.append(color)
 
             for c in ap_data['clients']:
@@ -174,7 +174,7 @@ class Viz(plugins.Plugin):
                 node_y.append(yy)
                 node_text.append(cname)
                 node_symbols.append('circle')
-                node_sizes.append(10)
+                node_sizes.append(15)
                 node_colors.append(color)
 
                 # edge
