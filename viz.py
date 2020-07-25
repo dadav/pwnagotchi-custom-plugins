@@ -75,9 +75,9 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.2.6"
+    __version__ = "0.2.7"
     __license__ = "GPL3"
-    __description__ = ""
+    __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
 
     COLORS = ["aliceblue", "antiquewhite", "aqua", "aquamarine", "azure",
