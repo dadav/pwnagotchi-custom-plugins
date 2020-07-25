@@ -2,6 +2,8 @@ import logging
 import json
 import plotly
 import plotly.graph_objects as go
+from random import random
+from math import pi, cos, sin
 from plotly.validators.scatter.marker import SymbolValidator
 from pwnagotchi import plugins
 from flask import render_template_string, abort, jsonify
@@ -54,7 +56,7 @@ TEMPLATE = """
                 }
             };
             var result = ajaxDataRenderer('/plugins/viz/update');
-            Plotly.newPlot('plot', result);
+            Plotly.newPlot('plot', result, layout);
         }
         loadGraphData();
         setInterval(loadGraphData, 60000);
@@ -69,7 +71,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.1.9"
+    __version__ = "0.1.10"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -81,6 +83,14 @@ class Viz(plugins.Plugin):
 
     def on_loaded(self):
         logging.info("Viz is loaded!")
+
+    @staticmethod
+    def random_pos(x0 ,y0, r):
+        w = r * random()
+        t = 2 * pi * random()
+        x = w * cos(t)
+        y = w * sin(t)
+        return x+x0, y+y0
 
     @staticmethod
     def create_graph(data):
@@ -97,7 +107,7 @@ class Viz(plugins.Plugin):
         node_colors = list()
 
         for ap_data in data:
-            name = ap_data['hostname'] or ap_data['mac']
+            name = ap_data['hostname'] or ap_data['vendor'] or ap_data['mac']
 
             # nodes
             x, y = abs(ap_data['rssi']), freq_to_channel(ap_data['frequency'])
@@ -110,8 +120,9 @@ class Viz(plugins.Plugin):
 
             for c in ap_data['clients']:
                 # node
-                cname = c['hostname'] or c['mac']
-                xx, yy = abs(c['rssi']), y
+                cname = c['hostname'] or c['vendor'] or c['mac']
+                r = abs(x - abs(c['rssi']))
+                xx, yy = Viz.random_pos(x,y,r)
                 node_x.append(xx)
                 node_y.append(yy)
                 node_text.append(cname)
@@ -121,9 +132,9 @@ class Viz(plugins.Plugin):
 
                 # edge
                 edge_x.append(x)
-                edge_x.append(x)
+                edge_x.append(xx)
                 edge_x.append(None)
-                edge_y.append(yy)
+                edge_y.append(y)
                 edge_y.append(yy)
                 edge_y.append(None)
 
