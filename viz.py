@@ -2,7 +2,7 @@ import logging
 import json
 import plotly
 import plotly.graph_objects as go
-from random import random
+from random import random, choice
 from math import pi, cos, sin
 from plotly.validators.scatter.marker import SymbolValidator
 from pwnagotchi import plugins
@@ -80,9 +80,18 @@ class Viz(plugins.Plugin):
         self.options = dict()
         self.data = None
         self.lock = Lock()
+        self.colors = ['red', 'orange', 'yellow', 'lime green', 'green',
+                       'blue-green', 'cyan', 'sky blue', 'blue', 'purple',
+                       'magenta', 'pink']
+        self.color_memory = dict()
 
     def on_loaded(self):
         logging.info("Viz is loaded!")
+
+    def lookup_color(self, node):
+        if node not in self.color_memory:
+            self.color_memory[node] = choice(self.colors)
+        return self.color_memory[node]
 
     @staticmethod
     def random_pos(x0 ,y0, r):
@@ -108,7 +117,7 @@ class Viz(plugins.Plugin):
 
         for ap_data in data:
             name = ap_data['hostname'] or ap_data['vendor'] or ap_data['mac']
-
+            color = self.lookup_color(name)
             # nodes
             x, y = abs(ap_data['rssi']), freq_to_channel(ap_data['frequency'])
             node_x.append(x)
@@ -116,7 +125,7 @@ class Viz(plugins.Plugin):
             node_text.append(name)
             node_symbols.append('square')
             node_sizes.append(10 + len(ap_data['clients']))
-            node_colors.append('green' if ap_data['encryption'] == '' else 'orange')
+            node_colors.append(color)
 
             for c in ap_data['clients']:
                 # node
@@ -128,7 +137,7 @@ class Viz(plugins.Plugin):
                 node_text.append(cname)
                 node_symbols.append('circle')
                 node_sizes.append(10)
-                node_colors.append('orange')
+                node_colors.append(color)
 
                 # edge
                 edge_x.append(x)
@@ -141,7 +150,7 @@ class Viz(plugins.Plugin):
 
         edge_trace = go.Scatter(
             x=edge_x, y=edge_y,
-            line=dict(width=0.5, color='#888'),
+            line=dict(width=1, color='#888'),
             hoverinfo='none',
             mode='lines')
 
