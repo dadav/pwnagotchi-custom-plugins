@@ -56,7 +56,11 @@ TEMPLATE = """
                 }
             };
             var result = ajaxDataRenderer('/plugins/viz/update');
-            Plotly.newPlot('plot', result, layout);
+            if (Object.keys(result).length) == 0 {
+                $('#plot').text('Waiting for data');
+            } else {
+                Plotly.newPlot('plot', result, layout);
+            }
         }
         loadGraphData();
         setInterval(loadGraphData, 60000);
@@ -71,27 +75,29 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.2.0"
+    __version__ = "0.2.1"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask']
+
+    COLORS = ['red', 'orange', 'yellow', 'lime green', 'green',
+                    'blue-green', 'cyan', 'sky blue', 'blue', 'purple',
+                    'magenta', 'pink']
+    COLOR_MEMORY = dict()
 
     def __init__(self):
         self.options = dict()
         self.data = None
         self.lock = Lock()
-        self.colors = ['red', 'orange', 'yellow', 'lime green', 'green',
-                       'blue-green', 'cyan', 'sky blue', 'blue', 'purple',
-                       'magenta', 'pink']
-        self.color_memory = dict()
 
     def on_loaded(self):
         logging.info("Viz is loaded!")
 
-    def lookup_color(self, node):
-        if node not in self.color_memory:
-            self.color_memory[node] = choice(self.colors)
-        return self.color_memory[node]
+    @staticmethod
+    def lookup_color(node):
+        if node not in Viz.COLOR_MEMORY:
+            Viz.COLOR_MEMORY[node] = choice(Viz.COLORS)
+        return Viz.COLOR_MEMORY[node]
 
     @staticmethod
     def random_pos(x0 ,y0, r):
@@ -117,7 +123,7 @@ class Viz(plugins.Plugin):
 
         for ap_data in data:
             name = ap_data['hostname'] or ap_data['vendor'] or ap_data['mac']
-            color = self.lookup_color(name)
+            color = Viz.lookup_color(name)
             # nodes
             x, y = abs(ap_data['rssi']), freq_to_channel(ap_data['frequency'])
             node_x.append(x)
