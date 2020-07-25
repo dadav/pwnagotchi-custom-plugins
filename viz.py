@@ -75,7 +75,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.2.5"
+    __version__ = "0.2.6"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -133,10 +133,9 @@ class Viz(plugins.Plugin):
 
     @staticmethod
     def random_pos(x0 ,y0, r):
-        w = r * random()
         t = 2 * pi * random()
-        x = w * cos(t)
-        y = w * sin(t)
+        x = r * cos(t)
+        y = r * sin(t)
         return x+x0, y+y0
 
     @staticmethod
@@ -168,13 +167,12 @@ class Viz(plugins.Plugin):
             for c in ap_data['clients']:
                 # node
                 cname = c['hostname'] or c['vendor'] or c['mac']
-                r = abs(x - abs(c['rssi']))
-                xx, yy = Viz.random_pos(x,y,r)
+                xx, yy = Viz.random_pos(x,y,3)
                 node_x.append(xx)
                 node_y.append(yy)
                 node_text.append(cname)
                 node_symbols.append('circle')
-                node_sizes.append(15)
+                node_sizes.append(10)
                 node_colors.append(color)
 
                 # edge
