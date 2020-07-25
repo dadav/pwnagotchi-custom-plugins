@@ -56,7 +56,7 @@ TEMPLATE = """
                 }
             };
             var result = ajaxDataRenderer('/plugins/viz/update');
-            if (Object.keys(result).length) == 0 {
+            if (Object.keys(result).length == 0) {
                 $('#plot').text('Waiting for data');
             } else {
                 Plotly.newPlot('plot', result, layout);
@@ -75,7 +75,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.2.1"
+    __version__ = "0.2.2"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask']
