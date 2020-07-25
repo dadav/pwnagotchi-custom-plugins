@@ -53,7 +53,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.1.3"
+    __version__ = "0.1.4"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask', 'networkx']
@@ -155,8 +155,10 @@ class Viz(plugins.Plugin):
         fig.update_xaxes(showticklabels = False)
         fig.update_yaxes(showticklabels = False)
 
-        return json.dumps((fig), cls=plotly.utils.PlotlyJSONEncoder)
-        # return json.dumps((edge_trace, node_trace), cls=plotly.utils.PlotlyJSONEncoder)
+        layout_json = json.dumps(layout, cls=plotly.utils.PlotlyJSONEncoder)
+        data_json = json.dumps((edge_trace, node_trace), cls=plotly.utils.PlotlyJSONEncoder)
+
+        return data_json, layout_json
 
 
     def on_unfiltered_ap_list(self, agent, data):
@@ -169,7 +171,7 @@ class Viz(plugins.Plugin):
 
         if path == 'update':
             with self.lock:
-                g = Viz.create_graph(self.data)
-            return jsonify(g)
+                d, l = Viz.create_graph(self.data)
+                return jsonify({'data': d, 'layout': l})
 
         abort(404)
