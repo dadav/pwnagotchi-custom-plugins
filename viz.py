@@ -75,7 +75,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.2.4"
+    __version__ = "0.2.5"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -137,7 +137,7 @@ class Viz(plugins.Plugin):
         t = 2 * pi * random()
         x = w * cos(t)
         y = w * sin(t)
-        return max(x,15)+x0, max(y,15)+y0
+        return x+x0, y+y0
 
     @staticmethod
     def create_graph(data):
