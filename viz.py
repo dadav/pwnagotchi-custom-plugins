@@ -75,7 +75,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.2.2"
+    __version__ = "0.2.3"
     __license__ = "GPL3"
     __description__ = ""
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -142,7 +142,7 @@ class Viz(plugins.Plugin):
     @staticmethod
     def create_graph(data):
         if not data:
-            return {}
+            return '{}'
 
         node_text = list()
         edge_x = list()
@@ -195,8 +195,11 @@ class Viz(plugins.Plugin):
         node_trace = go.Scatter(
             x=node_x, y=node_y,
             mode='markers',
-            marker_symbol=node_symbols,
-            marker_size=node_sizes,
+            marker=dict(
+                size=node_sizes,
+                color=node_colors,
+                symbol=node_symbols,
+            ),
             hovertext=node_text,
             hoverinfo='text')
 
