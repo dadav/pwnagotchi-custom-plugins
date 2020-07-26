@@ -58,7 +58,7 @@ TEMPLATE = """
 
         function loadGraphData() {
             var result = ajaxDataRenderer('/plugins/viz/update');
-            if (Object.keys(result).length > 0) {
+            if (Array.isArray(result) && Object.keys(result).length > 0) {
                 if (hasData == false) {
                     $('#plot').text('');
                     Plotly.newPlot('plot', result, layout);
@@ -93,7 +93,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.3.2"
+    __version__ = "0.3.3"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
