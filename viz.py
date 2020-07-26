@@ -3,6 +3,7 @@ import json
 import plotly
 import plotly.graph_objects as go
 import random
+from collections import OrderedDict
 from functools import lru_cache
 from math import pi, cos, sin
 from pwnagotchi import plugins
@@ -97,7 +98,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.3.7"
+    __version__ = "0.3.8"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -146,6 +147,9 @@ class Viz(plugins.Plugin):
 
     def on_loaded(self):
         logging.info("Viz is loaded!")
+
+        if 'collect' not in self.options:
+            self.options['collect'] = False
 
     @staticmethod
     def lookup_color(node):
@@ -233,7 +237,9 @@ class Viz(plugins.Plugin):
 
     def on_unfiltered_ap_list(self, agent, data):
         with self.lock:
+            data = sorted(data, key=lambda k: k['mac'])
             self.data = json.dumps(data)
+
 
     def on_webhook(self, path, request):
         if not path or path == "/":
