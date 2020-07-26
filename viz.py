@@ -60,6 +60,7 @@ TEMPLATE = """
             var result = ajaxDataRenderer('/plugins/viz/update');
             if (Object.keys(result).length > 0) {
                 if (hasData == false) {
+                    $('#plot').text('');
                     Plotly.newPlot('plot', result, layout);
                     hasData = true;
                 } else {
@@ -85,13 +86,14 @@ TEMPLATE = """
 
 {% block content %}
     <div class="chart" id="plot">
+        Waiting for data...
     </div>
 {% endblock %}
 """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.3.1"
+    __version__ = "0.3.2"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
