@@ -35,7 +35,7 @@ TEMPLATE = """
             showlegend: false,
             xaxis: {
                 title: {
-                    text: 'Distance',
+                    text: 'Signal',
                 },
             },
             yaxis: {
@@ -98,7 +98,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.3.8"
+    __version__ = "0.3.9"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
