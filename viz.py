@@ -26,8 +26,25 @@ TEMPLATE = """
 
 {% block script %}
     $(document).ready(function(){
+        var hasData = false;
+        var layout = {
+            title: 'Viz Map',
+            hovermode: 'closest',
+            showlegend: false,
+            xaxis: {
+                title: {
+                    text: 'Distance',
+                },
+            },
+            yaxis: {
+                title: {
+                    text: 'Channel',
+                }
+            }
+        };
         var ajaxDataRenderer = function(url, plot, options) {
         var ret = null;
+
         $.ajax({
             async: false,
             url: url,
@@ -40,26 +57,25 @@ TEMPLATE = """
         };
 
         function loadGraphData() {
-            var layout = {
-                title: 'Viz Map',
-                hovermode: 'closest',
-                showlegend: false,
-                xaxis: {
-                    title: {
-                        text: 'Distance',
-                    },
-                },
-                yaxis: {
-                    title: {
-                        text: 'Channel',
-                    }
-                }
-            };
             var result = ajaxDataRenderer('/plugins/viz/update');
-            if (Object.keys(result).length == 0) {
-                $('#plot').text('Waiting for data');
-            } else {
-                Plotly.newPlot('plot', result, layout);
+            if (Object.keys(result).length > 0) {
+                if (hasData == false) {
+                    Plotly.newPlot('plot', result, layout);
+                    hasData == true;
+                } else {
+                    Plotly.animate('plot', {
+                        data: result,
+                        layout: {}
+                    }, {
+                    transition: {
+                        duration: 500,
+                        easing: 'cubic-in-out'
+                    },
+                    frame: {
+                        duration: 500
+                    }
+                    })
+                }
             }
         }
         loadGraphData();
@@ -75,12 +91,12 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.2.9"
+    __version__ = "0.3.0"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
 
-    COLORS = ["aliceblue", "antiquewhite", "aqua", "aquamarine", "azure",
+    COLORS = ["aliceblue", "aqua", "aquamarine", "azure",
             "beige", "bisque", "black", "blanchedalmond", "blue",
             "blueviolet", "brown", "burlywood", "cadetblue",
             "chartreuse", "chocolate", "coral", "cornflowerblue",
@@ -91,8 +107,8 @@ class Viz(plugins.Plugin):
             "darkslateblue", "darkslategray", "darkslategrey",
             "darkturquoise", "darkviolet", "deeppink", "deepskyblue",
             "dimgray", "dimgrey", "dodgerblue", "firebrick",
-            "floralwhite", "forestgreen", "fuchsia", "gainsboro",
-            "ghostwhite", "gold", "goldenrod", "gray", "grey", "green",
+            "forestgreen", "fuchsia", "gainsboro",
+            "gold", "goldenrod", "gray", "grey", "green",
             "greenyellow", "honeydew", "hotpink", "indianred", "indigo",
             "ivory", "khaki", "lavender", "lavenderblush", "lawngreen",
             "lemonchiffon", "lightblue", "lightcoral", "lightcyan",
@@ -104,7 +120,7 @@ class Viz(plugins.Plugin):
             "mediumblue", "mediumorchid", "mediumpurple",
             "mediumseagreen", "mediumslateblue", "mediumspringgreen",
             "mediumturquoise", "mediumvioletred", "midnightblue",
-            "mintcream", "mistyrose", "moccasin", "navajowhite", "navy",
+            "mintcream", "mistyrose", "moccasin", "navy",
             "oldlace", "olive", "olivedrab", "orange", "orangered",
             "orchid", "palegoldenrod", "palegreen", "paleturquoise",
             "palevioletred", "papayawhip", "peachpuff", "peru", "pink",
@@ -113,7 +129,7 @@ class Viz(plugins.Plugin):
             "sandybrown", "seagreen", "seashell", "sienna", "silver",
             "skyblue", "slateblue", "slategray", "slategrey", "snow",
             "springgreen", "steelblue", "tan", "teal", "thistle", "tomato",
-            "turquoise", "violet", "wheat", "white", "whitesmoke",
+            "turquoise", "violet", "wheat",
             "yellow", "yellowgreen"]
     COLOR_MEMORY = dict()
 
