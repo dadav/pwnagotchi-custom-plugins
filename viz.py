@@ -61,7 +61,7 @@ TEMPLATE = """
             if (Object.keys(result).length > 0) {
                 if (hasData == false) {
                     Plotly.newPlot('plot', result, layout);
-                    hasData == true;
+                    hasData = true;
                 } else {
                     Plotly.animate('plot', {
                         data: result,
@@ -91,7 +91,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.3.0"
+    __version__ = "0.3.1"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
