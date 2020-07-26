@@ -4,7 +4,6 @@ import plotly
 import plotly.graph_objects as go
 import random
 from functools import lru_cache
-from frozendict import frozendict
 from math import pi, cos, sin
 from pwnagotchi import plugins
 from flask import render_template_string, abort, jsonify
@@ -98,10 +97,10 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.3.6"
+    __version__ = "0.3.7"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
-    __dependencies__ = ['plotly', 'pandas', 'flask', 'frozendict']
+    __dependencies__ = ['plotly', 'pandas', 'flask']
 
     COLORS = ["aliceblue", "aqua", "aquamarine", "azure",
             "beige", "bisque", "black", "blanchedalmond", "blue",
@@ -164,10 +163,12 @@ class Viz(plugins.Plugin):
         return x+x0, y+y0
 
     @staticmethod
-    @lru_cache(maxsize=128)
+    @lru_cache(maxsize=2)
     def create_graph(data):
         if not data:
             return '{}'
+
+        data = json.loads(data)
 
         node_text = list()
         edge_x = list()
@@ -232,7 +233,7 @@ class Viz(plugins.Plugin):
 
     def on_unfiltered_ap_list(self, agent, data):
         with self.lock:
-            self.data = frozendict(data)
+            self.data = json.dumps(data)
 
     def on_webhook(self, path, request):
         if not path or path == "/":
