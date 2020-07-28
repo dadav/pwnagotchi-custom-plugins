@@ -28,24 +28,6 @@ TEMPLATE = """
 {% block script %}
     $(document).ready(function(){
         var hasData = false;
-        var layout = {
-            title: 'Viz Map',
-            hovermode: 'closest',
-            showlegend: false,
-            xaxis: {
-                title: {
-                    text: 'Signal',
-                },
-            },
-            yaxis: {
-                title: {
-                    text: 'Channel',
-                },
-                tickmode: 'linear',
-                tick0: 1,
-                dtick: 1
-            }
-        };
         var ajaxDataRenderer = function(url, plot, options) {
         var ret = null;
 
@@ -61,6 +43,24 @@ TEMPLATE = """
         };
 
         function loadGraphData() {
+            var layout = {
+                title: 'Viz Map',
+                hovermode: 'closest',
+                showlegend: false,
+                xaxis: {
+                    title: {
+                        text: 'Signal',
+                    },
+                },
+                yaxis: {
+                    title: {
+                        text: 'Channel',
+                    },
+                    tickmode: 'linear',
+                    tick0: 1,
+                    dtick: 1
+                }
+            };
             var result = ajaxDataRenderer('/plugins/viz/update');
             if (Array.isArray(result) && Object.keys(result).length > 0) {
                 if (hasData == false) {
@@ -97,7 +97,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.4.0"
+    __version__ = "0.5.0"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -164,7 +164,7 @@ class Viz(plugins.Plugin):
 
     @staticmethod
     @lru_cache(maxsize=2)
-    def create_graph(data):
+    def create_graph(data, channel=None):
         if not data:
             return '{}'
 
@@ -228,13 +228,27 @@ class Viz(plugins.Plugin):
             hovertext=node_text,
             hoverinfo='text')
 
-        return json.dumps((edge_trace, node_trace), cls=plotly.utils.PlotlyJSONEncoder)
+        channel_line = go.Scatter(
+            mode='lines',
+            line=dict(width=15, color='#ff0000'),
+            x=[min(node_x), max(node_x)],
+            y=[channel, channel],
+            opacity=0.25,
+            hoverinfo='none',
+        ) if channel else dict()
+
+        return json.dumps((edge_trace, node_trace, channel_line),
+                          cls=plotly.utils.PlotlyJSONEncoder)
 
 
     def on_unfiltered_ap_list(self, agent, data):
         with self.lock:
             data = sorted(data, key=lambda k: k['mac'])
             self.data = json.dumps(data)
+
+    def on_channel_hop(self, agent, channel):
+        with self.lock:
+            self.channel = channel
 
 
     def on_webhook(self, path, request):
@@ -243,7 +257,7 @@ class Viz(plugins.Plugin):
 
         if path == 'update':
             with self.lock:
-                g = Viz.create_graph(self.data)
+                g = Viz.create_graph(self.data, self.channel)
                 return jsonify(g)
 
         abort(404)
