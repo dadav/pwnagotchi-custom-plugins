@@ -70,14 +70,14 @@ TEMPLATE = """
                 } else {
                     Plotly.animate('plot', {
                         data: result,
-                        layout: {}
+                        layout: layout
                     }, {
                     transition: {
-                        duration: 500,
+                        duration: 1000,
                         easing: 'cubic-in-out'
                     },
                     frame: {
-                        duration: 500
+                        duration: 1000
                     }
                     })
                 }
@@ -97,7 +97,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.5.0"
+    __version__ = "0.5.1"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -237,7 +237,7 @@ class Viz(plugins.Plugin):
             hoverinfo='none',
         ) if channel else dict()
 
-        return json.dumps((edge_trace, node_trace, channel_line),
+        return json.dumps((channel_line, edge_trace, node_trace),
                           cls=plotly.utils.PlotlyJSONEncoder)
 
 
