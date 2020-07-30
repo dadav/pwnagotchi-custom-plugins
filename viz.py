@@ -97,7 +97,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.5.2"
+    __version__ = "0.5.3"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -231,7 +231,7 @@ class Viz(plugins.Plugin):
         channel_line = go.Scatter(
             mode='lines',
             line=dict(width=15, color='#ff0000'),
-            x=[min(node_x) + 15, max(node_x) + 15],
+            x=[min(node_x) - 5, max(node_x) + 5],
             y=[channel, channel],
             opacity=0.25,
             hoverinfo='none',
