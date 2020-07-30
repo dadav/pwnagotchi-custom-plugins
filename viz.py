@@ -97,7 +97,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.5.1"
+    __version__ = "0.5.2"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
@@ -163,7 +163,7 @@ class Viz(plugins.Plugin):
         return x+x0, y+y0
 
     @staticmethod
-    @lru_cache(maxsize=2)
+    @lru_cache(maxsize=13)
     def create_graph(data, channel=None):
         if not data:
             return '{}'
@@ -231,7 +231,7 @@ class Viz(plugins.Plugin):
         channel_line = go.Scatter(
             mode='lines',
             line=dict(width=15, color='#ff0000'),
-            x=[min(node_x), max(node_x)],
+            x=[min(node_x) + 15, max(node_x) + 15],
             y=[channel, channel],
             opacity=0.25,
             hoverinfo='none',
