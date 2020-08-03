@@ -5,9 +5,10 @@ import pwnagotchi.plugins as plugins
 
 class Twitter(plugins.Plugin):
     __author__ = 'evilsocket@gmail.com'
-    __version__ = '1.1.0'
+    __version__ = '1.1.1'
     __license__ = 'GPL3'
     __description__ = 'This plugin creates tweets about the recent activity of pwnagotchi'
+    __dependencies__ = ['tweepy']
 
     def on_loaded(self):
         logging.info("twitter plugin loaded.")
