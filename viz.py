@@ -8,7 +8,7 @@ from math import pi, cos, sin
 from pwnagotchi import plugins
 from flask import render_template_string, abort, jsonify
 from threading import Lock
-from pwnagotchi.mesh.wifi import freq_to_channel
+from pwnagotchi.wifi import freq_to_channel
 
 
 TEMPLATE = """
@@ -97,7 +97,7 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.5.3"
+    __version__ = "0.5.4"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
