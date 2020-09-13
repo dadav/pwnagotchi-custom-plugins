@@ -25,9 +25,10 @@ from dateutil.parser import parse
 class Webgpsmap(plugins.Plugin):
     __name__ = 'webgpsmap'
     __author__ = 'https://github.com/xenDE and https://github.com/dadav'
-    __version__ = '2.0.0'
+    __version__ = '2.0.1'
     __license__ = 'GPL3'
     __description__ = 'a plugin for pwnagotchi that shows a openstreetmap with positions of ap-handshakes in your webbrowser'
+    __dependencies__ = ['flask']
     __assets__ = ['webgpsmap.html']
     __defaults__ = {
         'enabled': False,

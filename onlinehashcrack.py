@@ -6,15 +6,16 @@ import requests
 from datetime import datetime
 from threading import Lock
 from pwnagotchi.utils import StatusFile, remove_whitelisted
-import pwnagotchi.plugins as plugins
+from pwnagotchi import plugins
 from json.decoder import JSONDecodeError
 
 
 class OnlineHashCrack(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '2.1.0'
+    __version__ = '2.1.4'
     __license__ = 'GPL3'
     __description__ = 'This plugin automatically uploads handshakes to https://onlinehashcrack.com'
+    __dependencies__ = ['requests']
     __defaults__ = {
         'enabled': False,
         'email': '',
