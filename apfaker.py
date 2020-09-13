@@ -10,7 +10,7 @@ from pwnagotchi.ui import fonts
 
 class APFaker(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '1.1.3'
+    __version__ = '1.1.4'
     __license__ = 'GPL3'
     __description__ = 'Creates fake aps.'
     __defaults__ = {
@@ -62,7 +62,7 @@ class APFaker(plugins.Plugin):
 
         cnt = 0
         base_list = self.ssids.copy()
-        while len(self.ssids) < self.options['max'] and self.repeat:
+        while len(self.ssids) < self.options['max'] and self.options['repeat']:
             self.ssids.extend([f"{ssid}_{cnt}" for ssid in base_list])
             cnt += 1
 
