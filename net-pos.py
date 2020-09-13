@@ -4,20 +4,23 @@ import os
 import threading
 import requests
 import time
-import pwnagotchi.plugins as plugins
+from pwnagotchi import plugins
 from pwnagotchi.utils import StatusFile
 
 
 class NetPos(plugins.Plugin):
     __author__ = 'zenzen san'
-    __version__ = '2.0.3'
+    __version__ = '3.0.0'
     __license__ = 'GPL3'
     __description__ = """Saves a json file with the access points with more signal
                          whenever a handshake is captured.
                          When internet is available the files are converted in geo locations
                          using Mozilla LocationService """
-
-    API_URL = 'https://location.services.mozilla.com/v1/geolocate?key={api}'
+    __defaults__ = {
+        'enabled': False,
+        'api_key': 'test',
+        'api_url': 'https://location.services.mozilla.com/v1/geolocate?key={api}',
+    }
 
     def __init__(self):
         self.report = StatusFile('/root/.net_pos_saved', data_format='json')
@@ -31,13 +34,11 @@ class NetPos(plugins.Plugin):
 
     def on_loaded(self):
         if 'api_key' not in self.options or ('api_key' in self.options and not self.options['api_key']):
-            logging.error("NET-POS: api_key isn't set. Can't use mozilla's api.")
+            logging.error('[net-pos] api_key isn\'t set. Can\'t use mozilla\'s api.')
             return
-        if 'api_url' in self.options:
-            self.API_URL = self.options['api_url']
         self.ready = True
-        logging.info("net-pos plugin loaded.")
-        logging.debug(f"net-pos: use api_url: {self.API_URL}");
+        logging.info('[net-pos] plugin loaded.')
+        logging.debug(f"[net-pos] use api_url: {self.options['api_url']}")
 
     def _append_saved(self, path):
         to_save = list()
@@ -69,7 +70,7 @@ class NetPos(plugins.Plugin):
             new_np_files = set(all_np_files) - set(reported) - set(self.skip)
 
             if new_np_files:
-                logging.debug("NET-POS: Found %d new net-pos files. Fetching positions ...", len(new_np_files))
+                logging.debug('[net-pos] Found %d new net-pos files. Fetching positions ...', len(new_np_files))
                 display.set('status', f"Found {len(new_np_files)} new net-pos files. Fetching positions ...")
                 display.update(force=True)
                 for idx, np_file in enumerate(new_np_files):
@@ -86,15 +87,15 @@ class NetPos(plugins.Plugin):
                     try:
                         geo_data = self._get_geo_data(np_file)  # returns json obj
                     except requests.exceptions.RequestException as req_e:
-                        logging.error("NET-POS: %s - RequestException: %s", np_file, req_e)
+                        logging.error('[net-pos] %s - RequestException: %s', np_file, req_e)
                         self.skip += np_file
                         continue
                     except json.JSONDecodeError as js_e:
-                        logging.error("NET-POS: %s - JSONDecodeError: %s, removing it...", np_file, js_e)
+                        logging.error('[net-pos] %s - JSONDecodeError: %s, removing it...', np_file, js_e)
                         os.remove(np_file)
                         continue
                     except OSError as os_e:
-                        logging.error("NET-POS: %s - OSError: %s", np_file, os_e)
+                        logging.error('[net-pos] %s - OSError: %s', np_file, os_e)
                         self.skip += np_file
                         continue
 
@@ -114,14 +115,13 @@ class NetPos(plugins.Plugin):
 
         netpos["ts"] = int("%.0f" % time.time())
         netpos_filename = filename.replace('.pcap', '.net-pos.json')
-        logging.debug("NET-POS: Saving net-location to %s", netpos_filename)
+        logging.debug('[net-pos] Saving net-location to %s', netpos_filename)
 
         try:
             with open(netpos_filename, 'w+t') as net_pos_file:
                 json.dump(netpos, net_pos_file)
         except OSError as os_e:
-            logging.error("NET-POS: %s", os_e)
-
+            logging.error('[net-pos] %s', os_e)
 
     def _get_netpos(self, agent):
         aps = agent.get_access_points()
@@ -134,7 +134,7 @@ class NetPos(plugins.Plugin):
         return netpos
 
     def _get_geo_data(self, path, timeout=30):
-        geourl = self.API_URL.format(api=self.options['api_key'])
+        geourl = self.options['api_url'].format(api=self.options['api_key'])
 
         try:
             with open(path, "r") as json_file:

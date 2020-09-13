@@ -5,13 +5,20 @@ from random import randint, choice, shuffle
 from pwnagotchi import plugins
 from pwnagotchi.ui.components import LabeledValue
 from pwnagotchi.ui.view import BLACK
+from pwnagotchi.ui import fonts
 
 
 class APFaker(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '0.4.0'
+    __version__ = '1.1.0'
     __license__ = 'GPL3'
     __description__ = 'Creates fake aps.'
+    __defaults__ = {
+        'enabled': False,
+        'ssids': ['5G TEST CELL TOWER'],
+        'max': 10,
+        'repeat': True,
+    }
 
     @staticmethod
     def random_mac():
@@ -27,20 +34,6 @@ class APFaker(plugins.Plugin):
         self.ready = False
 
     def on_loaded(self):
-        if 'ssids' not in self.options or ('ssids' in self.options and self.options['ssids'] is None):
-            logging.debug("APfaker: No ssids or wordlist supplied.")
-            return
-
-        if 'max' not in self.options or ('max' in self.options and self.options['max'] is None):
-            self.max_ap_cnt = 10
-        else:
-            self.max_ap_cnt = self.options['max']
-
-        if 'repeat' not in self.options or ('repeat' in self.options and self.options['repeat'] is None):
-            self.repeat = True
-        else:
-            self.repeat = self.options['repeat']
-
         if isinstance(self.options['ssids'], str):
             path = self.options['ssids']
             if not os.path.exists(path):
@@ -50,16 +43,16 @@ class APFaker(plugins.Plugin):
                     with open(path) as wordlist:
                         self.ssids = wordlist.read().split()
                 except OSError as oserr:
-                    logging.error(oserr)
+                    logging.error('[apfaker] %s', oserr)
                     return
         elif isinstance(self.options['ssids'], list):
             self.ssids = self.options['ssids']
         else:
-            logging.error("APFaker: wtf is %s", self.options['ssids'])
+            logging.error('[apfaker] wtf is %s', self.options['ssids'])
             return
 
         self.ready = True
-        logging.info('APFaker loaded')
+        logging.info('[apfaker] plugin loaded')
 
     def on_ready(self, agent):
         if not self.ready:
@@ -74,17 +67,17 @@ class APFaker(plugins.Plugin):
             cnt += 1
 
         for idx, ssid in enumerate(self.ssids[:self.max_ap_cnt]):
-            channel = choice([1,6,11])
+            channel = choice([1, 6, 11])
             mac = APFaker.random_mac()
             try:
-                logging.info("APFaker: creating fake ap with ssid \"%s\" (bssid: %s) on channel %d", ssid, mac, channel)
+                logging.info('[apfaker] creating fake ap with ssid "%s" (bssid: %s) on channel %d', ssid, mac, channel)
                 agent.run(f"set wifi.ap.ssid {ssid}")
                 agent.run(f"set wifi.ap.bssid {mac}")
                 agent.run(f"set wifi.ap.channel {channel}")
                 agent.run("wifi.ap")
-                ui.set('apfake', idx + 1)
+                agent.view().set('apfake', str(idx + 1))
             except Exception as ex:
-                log.debug(ex)
+                logging.debug('[apfaker] %s', ex)
 
     def on_ui_setup(self, ui):
         with ui._lock:

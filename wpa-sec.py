@@ -10,9 +10,16 @@ from json.decoder import JSONDecodeError
 
 class WpaSec(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '2.1.0'
+    __version__ = '3.0.0'
     __license__ = 'GPL3'
     __description__ = 'This plugin automatically uploads handshakes to https://wpa-sec.stanev.org'
+    __defaults__ = {
+        'enabled': False,
+        'api_key': '',
+        'api_url': 'https://wpa-sec.stanev.org',
+        'download_results': False,
+        'whitelist': [],
+    }
 
     def __init__(self):
         self.ready = False
@@ -47,10 +54,9 @@ class WpaSec(plugins.Plugin):
                                        files=payload,
                                        timeout=timeout)
                 if ' already submitted' in result.text:
-                    logging.debug("%s was already submitted.", path)
+                    logging.debug('[wpasec] %s was already submitted.', path)
             except requests.exceptions.RequestException as req_e:
                 raise req_e
-
 
     def _download_from_wpasec(self, output, timeout=30):
         """
@@ -73,17 +79,16 @@ class WpaSec(plugins.Plugin):
         except OSError as os_e:
             raise os_e
 
-
     def on_loaded(self):
         """
         Gets called when the plugin gets loaded
         """
-        if 'api_key' not in self.options or ('api_key' in self.options and not self.options['api_key']):
-            logging.error("WPA_SEC: API-KEY isn't set. Can't upload to wpa-sec.stanev.org")
+        if not self.options['api_key']:
+            logging.error('[wpasec] API-KEY isn\'t set. Can\'t upload.')
             return
 
-        if 'api_url' not in self.options or ('api_url' in self.options and not self.options['api_url']):
-            logging.error("WPA_SEC: API-URL isn't set. Can't upload, no endpoint configured.")
+        if not self.options['api_url']:
+            logging.error('[wpasec] API-URL isn\'t set. Can\'t upload, no endpoint configured.')
             return
 
         if 'whitelist' not in self.options:
@@ -116,7 +121,7 @@ class WpaSec(plugins.Plugin):
             handshake_new = set(handshake_paths) - set(reported) - set(self.skip)
 
             if handshake_new:
-                logging.info("WPA_SEC: Internet connectivity detected. Uploading new handshakes to wpa-sec.stanev.org")
+                logging.info('[wpasec] Internet connectivity detected. Uploading new handshakes to wpa-sec.stanev.org')
                 for idx, handshake in enumerate(handshake_new):
                     if self.shutdown:
                         return
@@ -126,13 +131,13 @@ class WpaSec(plugins.Plugin):
                         self._upload_to_wpasec(handshake)
                         reported.append(handshake)
                         self.report.update(data={'reported': reported})
-                        logging.debug("WPA_SEC: Successfully uploaded %s", handshake)
+                        logging.debug('[wpasec] Successfully uploaded %s', handshake)
                     except requests.exceptions.RequestException as req_e:
                         self.skip.append(handshake)
-                        logging.debug("WPA_SEC: %s", req_e)
+                        logging.debug('[wpasec] %s', req_e)
                         continue
                     except OSError as os_e:
-                        logging.debug("WPA_SEC: %s", os_e)
+                        logging.debug('[wpasec] %s', os_e)
                         continue
 
             if 'download_results' in self.options and self.options['download_results']:
@@ -143,8 +148,8 @@ class WpaSec(plugins.Plugin):
                         return
                 try:
                     self._download_from_wpasec(os.path.join(handshake_dir, 'wpa-sec.cracked.potfile'))
-                    logging.info("WPA_SEC: Downloaded cracked passwords.")
+                    logging.info('[wpasec] Downloaded cracked passwords.')
                 except requests.exceptions.RequestException as req_e:
-                    logging.debug("WPA_SEC: %s", req_e)
+                    logging.debug('[wpasec] %s', req_e)
                 except OSError as os_e:
-                    logging.debug("WPA_SEC: %s", os_e)
+                    logging.debug('[wpasec] %s', os_e)

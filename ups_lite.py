@@ -12,12 +12,11 @@ import struct
 
 from pwnagotchi.ui.components import LabeledValue
 from pwnagotchi.ui.view import BLACK
-import pwnagotchi.ui.fonts as fonts
-import pwnagotchi.plugins as plugins
+from pwnagotchi.ui import fonts
+from pwnagotchi import plugins
 import pwnagotchi
 
 
-# TODO: add enable switch in config.yml an cleanup all to the best place
 class UPS:
     def __init__(self):
         # only import when the module is loaded and enabled
@@ -31,7 +30,8 @@ class UPS:
             read = self._bus.read_word_data(address, 2)
             swapped = struct.unpack("<H", struct.pack(">H", read))[0]
             return swapped * 1.25 / 1000 / 16
-        except:
+        except Exception as ex:
+            logging.error('[upslite] %s', ex)
             return 0.0
 
     def capacity(self):
@@ -40,15 +40,19 @@ class UPS:
             read = self._bus.read_word_data(address, 4)
             swapped = struct.unpack("<H", struct.pack(">H", read))[0]
             return swapped / 256
-        except:
+        except Exception as ex:
+            logging.error('[upslite] %s', ex)
             return 0.0
 
 
 class UPSLite(plugins.Plugin):
     __author__ = 'evilsocket@gmail.com'
-    __version__ = '1.0.0'
+    __version__ = '2.0.0'
     __license__ = 'GPL3'
     __description__ = 'A plugin that will add a voltage indicator for the UPS Lite v1.1'
+    __defaults__ = {
+        'enabled': False,
+    }
 
     def __init__(self):
         self.ups = None
@@ -68,6 +72,6 @@ class UPSLite(plugins.Plugin):
         capacity = self.ups.capacity()
         ui.set('ups', "%2i%%" % capacity)
         if capacity <= self.options['shutdown']:
-            logging.info('[ups_lite] Empty battery (<= %s%%): shuting down' % self.options['shutdown'])
+            logging.info('[upslite] Empty battery (<= %s%%): shuting down' % self.options['shutdown'])
             ui.update(force=True, new_data={'status': 'Battery exhausted, bye ...'})
             pwnagotchi.shutdown()

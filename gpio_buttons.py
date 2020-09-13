@@ -6,13 +6,16 @@ import pwnagotchi.plugins as plugins
 
 class GPIOButtons(plugins.Plugin):
     __author__ = 'ratmandu@gmail.com'
-    __version__ = '1.0.0'
+    __version__ = '2.0.0'
     __license__ = 'GPL3'
     __description__ = 'GPIO Button support plugin'
+    __defaults__ = {
+        'enabled': False,
+    }
 
     def __init__(self):
         self.running = False
-        self.ports = {}
+        self.ports = dict()
         self.commands = None
 
     def runCommand(self, channel):

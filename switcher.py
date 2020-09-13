@@ -18,11 +18,13 @@ def systemd_dropin(name, content):
 
     systemctl("daemon-reload")
 
+
 def systemctl(command, unit=None):
     if unit:
         os.system("/bin/systemctl %s %s" % (command, unit))
     else:
         os.system("/bin/systemctl %s" % command)
+
 
 def run_task(name, options):
     task_service_name = "switcher-%s-task.service" % name
@@ -98,12 +100,17 @@ def run_task(name, options):
     systemctl("daemon-reload")
     systemctl("start", task_service_name)
 
+
 class Switcher(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '0.0.1'
+    __version__ = '1.0.0'
     __name__ = 'switcher'
     __license__ = 'GPL3'
     __description__ = 'This plugin is a generic task scheduler.'
+    __defaults__ = {
+        'enabled': False,
+        'tasks': {},
+    }
 
     def __init__(self):
         self.ready = False
@@ -122,13 +129,11 @@ class Switcher(plugins.Plugin):
                 run_task(function_name, task)
 
     def on_loaded(self):
-        if 'tasks' in self.options and self.options['tasks']:
-            self.tasks = self.options['tasks']
-        else:
+        if not self.options['tasks']:
             logging.debug('[switcher] No tasks found...')
             return
 
-        logging.info("[switcher] is loaded.")
+        logging.info("[switcher] plugin is loaded.")
 
         # create hooks
         logging.debug("[switcher] creating hooks...")

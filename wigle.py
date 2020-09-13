@@ -94,10 +94,15 @@ def _send_to_wigle(lines, api_key, timeout=30):
 
 class Wigle(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '2.0.0'
+    __version__ = '3.0.0'
     __license__ = 'GPL3'
     __description__ = 'This plugin automatically uploads collected wifis to wigle.net'
     __dependencies__ = ['requests']
+    __defaults__ = {
+        'enabled': False,
+        'api_key': '',
+        'whitelist': [],
+    }
 
     def __init__(self):
         self.ready = False
@@ -114,11 +119,11 @@ class Wigle(plugins.Plugin):
         self.shutdown = True
 
     def on_loaded(self):
-        if 'api_key' not in self.options or ('api_key' in self.options and self.options['api_key'] is None):
+        if not self.options['api_key']:
             logging.debug("WIGLE: api_key isn't set. Can't upload to wigle.net")
             return
 
-        if not 'whitelist' in self.options:
+        if 'whitelist' not in self.options:
             self.options['whitelist'] = list()
 
         self.ready = True

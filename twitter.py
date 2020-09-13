@@ -1,17 +1,24 @@
 import logging
 from pwnagotchi.voice import Voice
-import pwnagotchi.plugins as plugins
+from pwnagotchi import plugins
 
 
 class Twitter(plugins.Plugin):
     __author__ = 'evilsocket@gmail.com'
-    __version__ = '1.1.1'
+    __version__ = '2.0.0'
     __license__ = 'GPL3'
     __description__ = 'This plugin creates tweets about the recent activity of pwnagotchi'
     __dependencies__ = ['tweepy']
+    __defaults__ = {
+        'enabled': False,
+        'consumer_key': '',
+        'consumer_secret': '',
+        'access_token_key': '',
+        'access_token_secret': '',
+    }
 
     def on_loaded(self):
-        logging.info("twitter plugin loaded.")
+        logging.info('[twitter] plugin loaded.')
 
     # called in manual mode when there's internet connectivity
     def on_internet_available(self, agent):
@@ -22,11 +29,11 @@ class Twitter(plugins.Plugin):
         if last_session.is_new() and last_session.handshakes > 0:
             try:
                 import tweepy
-            except ImportError:
-                logging.error("Couldn't import tweepy")
+            except ImportError as ie:
+                logging.error('[twitter] Couldn\'t import tweepy (%s)', ie)
                 return
 
-            logging.info("detected a new session and internet connectivity!")
+            logging.info('[twitter] detected a new session and internet connectivity!')
 
             picture = '/root/pwnagotchi.png'
 
@@ -45,6 +52,6 @@ class Twitter(plugins.Plugin):
                 api.update_with_media(filename=picture, status=tweet)
                 last_session.save_session_id()
 
-                logging.info("tweeted: %s" % tweet)
+                logging.info('[twitter] tweeted: %s', tweet)
             except Exception as e:
-                logging.exception("error while tweeting")
+                logging.exception('[twitter] error while tweeting (%s)', e)

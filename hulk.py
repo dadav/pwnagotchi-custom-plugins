@@ -7,16 +7,19 @@ from pwnagotchi import plugins
 
 class Hulk(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.1.0"
-    __license__ = "GPL3"
-    __description__ = "This will put pwnagotchi in hulk mode. Hulk is always angry!"
+    __version__ = '1.0.0'
+    __license__ = 'GPL3'
+    __description__ = 'This will put pwnagotchi in hulk mode. Hulk is always angry!'
+    __defaults__ = {
+        'enabled': False,
+    }
 
     def __init__(self):
         self.options = dict()
         self.running = False
 
     def on_loaded(self):
-        logging.info("HULK IS LOADED!")
+        logging.info('[hulk] PLUGIN IS LOADED! WHAAAAAAAAAAAAAAAAAA')
         self.running = True
 
     def on_unload(self, ui):
@@ -30,7 +33,7 @@ class Hulk(plugins.Plugin):
             if i % 10 == 0:
                 display.set('status', 'HULK SMASH!!')
             try:
-                agent.run("wifi.deauth *")
+                agent.run('wifi.deauth *')
             except Exception:
                 pass
             finally:

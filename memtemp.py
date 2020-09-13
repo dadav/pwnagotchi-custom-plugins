@@ -30,9 +30,14 @@ class MemTemp(plugins.Plugin):
     __version__ = '1.0.1'
     __license__ = 'GPL3'
     __description__ = 'A plugin that will display memory/cpu usage and temperature'
+    __defaults__ = {
+        'enabled': False,
+        'scale': 'celsius',
+        'orientation': 'horizontal',
+    }
 
     def on_loaded(self):
-        logging.info("memtemp plugin loaded.")
+        logging.info("[memtemp] plugin loaded.")
 
     def mem_usage(self):
         return int(pwnagotchi.mem_usage() * 100)

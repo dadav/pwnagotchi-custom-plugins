@@ -95,48 +95,52 @@ TEMPLATE = """
 {% endblock %}
 """
 
+
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "0.5.4"
+    __version__ = "1.0.0"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
     __dependencies__ = ['plotly', 'pandas', 'flask']
+    __defaults__ = {
+        'enabled': False,
+    }
 
     COLORS = ["aliceblue", "aqua", "aquamarine", "azure",
-            "beige", "bisque", "black", "blanchedalmond", "blue",
-            "blueviolet", "brown", "burlywood", "cadetblue",
-            "chartreuse", "chocolate", "coral", "cornflowerblue",
-            "cornsilk", "crimson", "cyan", "darkblue", "darkcyan",
-            "darkgoldenrod", "darkgray", "darkgrey", "darkgreen",
-            "darkkhaki", "darkmagenta", "darkolivegreen", "darkorange",
-            "darkorchid", "darkred", "darksalmon", "darkseagreen",
-            "darkslateblue", "darkslategray", "darkslategrey",
-            "darkturquoise", "darkviolet", "deeppink", "deepskyblue",
-            "dimgray", "dimgrey", "dodgerblue", "firebrick",
-            "forestgreen", "fuchsia", "gainsboro",
-            "gold", "goldenrod", "gray", "grey", "green",
-            "greenyellow", "honeydew", "hotpink", "indianred", "indigo",
-            "ivory", "khaki", "lavender", "lavenderblush", "lawngreen",
-            "lemonchiffon", "lightblue", "lightcoral", "lightcyan",
-            "lightgoldenrodyellow", "lightgray", "lightgrey",
-            "lightgreen", "lightpink", "lightsalmon", "lightseagreen",
-            "lightskyblue", "lightslategray", "lightslategrey",
-            "lightsteelblue", "lightyellow", "lime", "limegreen",
-            "linen", "magenta", "maroon", "mediumaquamarine",
-            "mediumblue", "mediumorchid", "mediumpurple",
-            "mediumseagreen", "mediumslateblue", "mediumspringgreen",
-            "mediumturquoise", "mediumvioletred", "midnightblue",
-            "mintcream", "mistyrose", "moccasin", "navy",
-            "oldlace", "olive", "olivedrab", "orange", "orangered",
-            "orchid", "palegoldenrod", "palegreen", "paleturquoise",
-            "palevioletred", "papayawhip", "peachpuff", "peru", "pink",
-            "plum", "powderblue", "purple", "red", "rosybrown",
-            "royalblue", "rebeccapurple", "saddlebrown", "salmon",
-            "sandybrown", "seagreen", "seashell", "sienna", "silver",
-            "skyblue", "slateblue", "slategray", "slategrey", "snow",
-            "springgreen", "steelblue", "tan", "teal", "thistle", "tomato",
-            "turquoise", "violet", "wheat",
-            "yellow", "yellowgreen"]
+              "beige", "bisque", "black", "blanchedalmond", "blue",
+              "blueviolet", "brown", "burlywood", "cadetblue",
+              "chartreuse", "chocolate", "coral", "cornflowerblue",
+              "cornsilk", "crimson", "cyan", "darkblue", "darkcyan",
+              "darkgoldenrod", "darkgray", "darkgrey", "darkgreen",
+              "darkkhaki", "darkmagenta", "darkolivegreen", "darkorange",
+              "darkorchid", "darkred", "darksalmon", "darkseagreen",
+              "darkslateblue", "darkslategray", "darkslategrey",
+              "darkturquoise", "darkviolet", "deeppink", "deepskyblue",
+              "dimgray", "dimgrey", "dodgerblue", "firebrick",
+              "forestgreen", "fuchsia", "gainsboro",
+              "gold", "goldenrod", "gray", "grey", "green",
+              "greenyellow", "honeydew", "hotpink", "indianred", "indigo",
+              "ivory", "khaki", "lavender", "lavenderblush", "lawngreen",
+              "lemonchiffon", "lightblue", "lightcoral", "lightcyan",
+              "lightgoldenrodyellow", "lightgray", "lightgrey",
+              "lightgreen", "lightpink", "lightsalmon", "lightseagreen",
+              "lightskyblue", "lightslategray", "lightslategrey",
+              "lightsteelblue", "lightyellow", "lime", "limegreen",
+              "linen", "magenta", "maroon", "mediumaquamarine",
+              "mediumblue", "mediumorchid", "mediumpurple",
+              "mediumseagreen", "mediumslateblue", "mediumspringgreen",
+              "mediumturquoise", "mediumvioletred", "midnightblue",
+              "mintcream", "mistyrose", "moccasin", "navy",
+              "oldlace", "olive", "olivedrab", "orange", "orangered",
+              "orchid", "palegoldenrod", "palegreen", "paleturquoise",
+              "palevioletred", "papayawhip", "peachpuff", "peru", "pink",
+              "plum", "powderblue", "purple", "red", "rosybrown",
+              "royalblue", "rebeccapurple", "saddlebrown", "salmon",
+              "sandybrown", "seagreen", "seashell", "sienna", "silver",
+              "skyblue", "slateblue", "slategray", "slategrey", "snow",
+              "springgreen", "steelblue", "tan", "teal", "thistle", "tomato",
+              "turquoise", "violet", "wheat",
+              "yellow", "yellowgreen"]
     COLOR_MEMORY = dict()
 
     def __init__(self):
@@ -145,7 +149,7 @@ class Viz(plugins.Plugin):
         self.lock = Lock()
 
     def on_loaded(self):
-        logging.info("Viz is loaded!")
+        logging.info("[viz] plugin is loaded!")
 
     @staticmethod
     def lookup_color(node):
@@ -155,12 +159,12 @@ class Viz(plugins.Plugin):
         return Viz.COLOR_MEMORY[node]
 
     @staticmethod
-    def random_pos(name, x0 ,y0, r):
+    def random_pos(name, x0, y0, r):
         random.seed(name)
         t = 2 * pi * random.random()
         x = r * cos(t)
         y = r * sin(t)
-        return x+x0, y+y0
+        return x + x0, y + y0
 
     @staticmethod
     @lru_cache(maxsize=13)
@@ -194,7 +198,7 @@ class Viz(plugins.Plugin):
             for c in ap_data['clients']:
                 # node
                 cname = c['hostname'] or c['vendor'] or c['mac']
-                xx, yy = Viz.random_pos(cname, x,y,3)
+                xx, yy = Viz.random_pos(cname, x, y, 3)
                 node_x.append(xx)
                 node_y.append(yy)
                 node_text.append(cname)
@@ -209,7 +213,6 @@ class Viz(plugins.Plugin):
                 edge_y.append(y)
                 edge_y.append(yy)
                 edge_y.append(None)
-
 
         edge_trace = go.Scatter(
             x=edge_x, y=edge_y,
@@ -240,7 +243,6 @@ class Viz(plugins.Plugin):
         return json.dumps((channel_line, edge_trace, node_trace),
                           cls=plotly.utils.PlotlyJSONEncoder)
 
-
     def on_unfiltered_ap_list(self, agent, data):
         with self.lock:
             data = sorted(data, key=lambda k: k['mac'])
@@ -249,7 +251,6 @@ class Viz(plugins.Plugin):
     def on_channel_hop(self, agent, channel):
         with self.lock:
             self.channel = channel
-
 
     def on_webhook(self, path, request):
         if not path or path == "/":
