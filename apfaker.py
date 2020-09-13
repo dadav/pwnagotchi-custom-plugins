@@ -3,6 +3,8 @@ import logging
 
 from random import randint, choice, shuffle
 from pwnagotchi import plugins
+from pwnagotchi.ui.components import LabeledValue
+from pwnagotchi.ui.view import BLACK
 
 
 class APFaker(plugins.Plugin):
@@ -71,7 +73,7 @@ class APFaker(plugins.Plugin):
             self.ssids.extend([f"{ssid}_{cnt}" for ssid in base_list])
             cnt += 1
 
-        for ssid in self.ssids[:self.max_ap_cnt]:
+        for idx, ssid in enumerate(self.ssids[:self.max_ap_cnt]):
             channel = choice([1,6,11])
             mac = APFaker.random_mac()
             try:
@@ -80,6 +82,15 @@ class APFaker(plugins.Plugin):
                 agent.run(f"set wifi.ap.bssid {mac}")
                 agent.run(f"set wifi.ap.channel {channel}")
                 agent.run("wifi.ap")
+                ui.set('apfake', idx + 1)
             except Exception as ex:
                 log.debug(ex)
 
+    def on_ui_setup(self, ui):
+        with ui._lock:
+            ui.add_element('apfake', LabeledValue(color=BLACK, label='F', value='-', position=(ui.width() / 2 - 10, 0),
+                           label_font=fonts.Bold, text_font=fonts.Medium))
+
+    def on_unload(self, ui):
+        with ui._lock:
+            ui.remove_element('apfake')
