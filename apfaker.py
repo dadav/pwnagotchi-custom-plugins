@@ -1,3 +1,4 @@
+import os
 import logging
 
 from random import randint, choice, shuffle
@@ -6,7 +7,7 @@ from pwnagotchi import plugins
 
 class APFaker(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '0.2.0'
+    __version__ = '0.2.1'
     __license__ = 'GPL3'
     __description__ = 'Creates fake aps.'
 
