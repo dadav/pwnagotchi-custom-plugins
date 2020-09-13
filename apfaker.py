@@ -10,7 +10,7 @@ from pwnagotchi.ui import fonts
 
 class APFaker(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '1.1.2'
+    __version__ = '1.1.3'
     __license__ = 'GPL3'
     __description__ = 'Creates fake aps.'
     __defaults__ = {
@@ -81,7 +81,7 @@ class APFaker(plugins.Plugin):
 
     def on_ui_setup(self, ui):
         with ui._lock:
-            ui.add_element('apfake', LabeledValue(color=BLACK, label='F', value='-', position=(ui.width() / 2 + 15, 0),
+            ui.add_element('apfake', LabeledValue(color=BLACK, label='F', value='-', position=(ui.width() / 2 + 20, 0),
                            label_font=fonts.Bold, text_font=fonts.Medium))
 
     def on_unload(self, ui):
