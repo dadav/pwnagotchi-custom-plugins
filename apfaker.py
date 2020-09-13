@@ -7,7 +7,7 @@ from pwnagotchi import plugins
 
 class APFaker(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '0.2.1'
+    __version__ = '0.2.2'
     __license__ = 'GPL3'
     __description__ = 'Creates fake aps.'
 
@@ -64,7 +64,7 @@ class APFaker(plugins.Plugin):
             channel = choice([1,6,11])
             mac = APFaker.random_mac()
             try:
-                log.info("APFaker: creating fake ap with ssid \"%s\" (bssid: %s) on channel %d", ssid, mac, channel)
+                logging.info("APFaker: creating fake ap with ssid \"%s\" (bssid: %s) on channel %d", ssid, mac, channel)
                 agent.run(f"set wifi.ap.ssid {ssid}")
                 agent.run(f"set wifi.ap.bssid {mac}")
                 agent.run(f"set wifi.ap.channel {channel}")
