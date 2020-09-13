@@ -7,7 +7,7 @@ from pwnagotchi import plugins
 
 class APFaker(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '0.2.2'
+    __version__ = '0.3.0'
     __license__ = 'GPL3'
     __description__ = 'Creates fake aps.'
 
@@ -34,6 +34,11 @@ class APFaker(plugins.Plugin):
         else:
             self.max_ap_cnt = self.options['max']
 
+        if 'repeat' not in self.options or ('repeat' in self.options and self.options['repeat'] is None):
+            self.repeat = True
+        else:
+            self.repeat = self.options['repeat']
+
         if isinstance(self.options['ssids'], str):
             path = self.options['ssids']
             if not os.path.exists(path):
@@ -59,6 +64,9 @@ class APFaker(plugins.Plugin):
             return
 
         shuffle(self.ssids)
+
+        while len(self.ssids) < self.max_ap_cnt and self.repeat:
+            self.ssids.extend(self.ssids)
 
         for ssid in self.ssids[:self.max_ap_cnt]:
             channel = choice([1,6,11])
