@@ -9,7 +9,7 @@ from pwnagotchi.ui.view import BLACK
 
 class APFaker(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '0.3.1'
+    __version__ = '0.4.0'
     __license__ = 'GPL3'
     __description__ = 'Creates fake aps.'
 
