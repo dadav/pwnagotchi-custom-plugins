@@ -5,16 +5,18 @@ from pwnagotchi import plugins
 
 class Twitter(plugins.Plugin):
     __author__ = 'evilsocket@gmail.com'
-    __version__ = '2.0.0'
+    __version__ = '2.0.1'
     __license__ = 'GPL3'
     __description__ = 'This plugin creates tweets about the recent activity of pwnagotchi'
-    __dependencies__ = ['tweepy']
+    __dependencies__ = {
+        'pip': ['tweepy']
+    }
     __defaults__ = {
         'enabled': False,
-        'consumer_key': '',
-        'consumer_secret': '',
-        'access_token_key': '',
-        'access_token_secret': '',
+        'consumer_key': None,
+        'consumer_secret': None,
+        'access_token_key': None,
+        'access_token_secret': None,
     }
 
     def on_loaded(self):

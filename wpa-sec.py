@@ -10,10 +10,12 @@ from json.decoder import JSONDecodeError
 
 class WpaSec(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '3.0.1'
+    __version__ = '3.0.2'
     __license__ = 'GPL3'
     __description__ = 'This plugin automatically uploads handshakes to https://wpa-sec.stanev.org'
-    __dependencies__ = ['requests']
+    __dependencies__ = {
+        'pip': ['requests']
+    }
     __defaults__ = {
         'enabled': False,
         'api_key': '',

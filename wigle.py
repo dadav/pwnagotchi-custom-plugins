@@ -94,10 +94,12 @@ def _send_to_wigle(lines, api_key, timeout=30):
 
 class Wigle(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '3.0.0'
+    __version__ = '3.0.1'
     __license__ = 'GPL3'
     __description__ = 'This plugin automatically uploads collected wifis to wigle.net'
-    __dependencies__ = ['requests']
+    __dependencies__ = {
+        'pip': ['requests']
+    }
     __defaults__ = {
         'enabled': False,
         'api_key': '',

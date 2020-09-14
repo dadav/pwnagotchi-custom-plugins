@@ -98,10 +98,12 @@ TEMPLATE = """
 
 class Viz(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = "1.0.0"
+    __version__ = "1.0.1"
     __license__ = "GPL3"
     __description__ = "This plugin visualizes the surrounding APs"
-    __dependencies__ = ['plotly', 'pandas', 'flask']
+    __dependencies__ = {
+        'pip': ['plotly', 'pandas', 'flask']
+    }
     __defaults__ = {
         'enabled': False,
     }
