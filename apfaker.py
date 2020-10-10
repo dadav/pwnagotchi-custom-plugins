@@ -96,7 +96,7 @@ class APFaker(plugins.Plugin):
         for idx, ssid in enumerate(self.ssids[:self.options['max']]):
             try:
                 logging.info('[apfaker] creating fake ap with ssid "%s"', ssid)
-                frams.append(APFaker.create_beacon(ssid, password_protected=self.options['password_protected'])
+                frams.append(APFaker.create_beacon(ssid, password_protected=self.options['password_protected']))
                 agent.view().set('apfake', str(idx + 1))
             except Exception as ex:
                 logging.debug('[apfaker] %s', ex)
