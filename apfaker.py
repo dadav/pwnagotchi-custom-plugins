@@ -12,7 +12,7 @@ from scapy.all import Dot11,Dot11Beacon,Dot11Elt,RadioTap,sendp, RandMAC
 
 class APFaker(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '2.0.2'
+    __version__ = '2.0.3'
     __license__ = 'GPL3'
     __description__ = 'Creates fake aps.'
     __dependencies__ = {
@@ -21,7 +21,7 @@ class APFaker(plugins.Plugin):
     __defaults__ = {
         'enabled': False,
         'ssids': ['5G TEST CELL TOWER'],
-        'max': 100,
+        'max': 50,
         'repeat': True,
         'password_protected': False,
     }
@@ -105,7 +105,7 @@ class APFaker(plugins.Plugin):
 
         while not self.shutdown:
             sendp(frames, iface=main_config['main']['iface'], verbose=False)
-            sleep(0.1)
+            sleep(max(0.1, len(frames) / 100))
 
     def on_before_shutdown(self):
         self.shutdown = True
