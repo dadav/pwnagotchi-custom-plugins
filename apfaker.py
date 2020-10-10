@@ -12,7 +12,7 @@ from scapy.all import Dot11,Dot11Beacon,Dot11Elt,RadioTap,sendp, RandMAC
 
 class APFaker(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '2.0.1'
+    __version__ = '2.0.2'
     __license__ = 'GPL3'
     __description__ = 'Creates fake aps.'
     __dependencies__ = {
@@ -96,7 +96,7 @@ class APFaker(plugins.Plugin):
         for idx, ssid in enumerate(self.ssids[:self.options['max']]):
             try:
                 logging.info('[apfaker] creating fake ap with ssid "%s"', ssid)
-                frams.append(APFaker.create_beacon(ssid, password_protected=self.options['password_protected']))
+                frames.append(APFaker.create_beacon(ssid, password_protected=self.options['password_protected']))
                 agent.view().set('apfake', str(idx + 1))
             except Exception as ex:
                 logging.debug('[apfaker] %s', ex)
@@ -104,7 +104,7 @@ class APFaker(plugins.Plugin):
         main_config = agent.config()
 
         while not self.shutdown:
-            sendp(frames, iface=main_config['main']['iface'])
+            sendp(frames, iface=main_config['main']['iface'], verbose=False)
             sleep(0.1)
 
     def on_before_shutdown(self):
