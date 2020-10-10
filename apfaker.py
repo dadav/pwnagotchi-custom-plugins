@@ -12,7 +12,7 @@ from scapy.all import Dot11,Dot11Beacon,Dot11Elt,RadioTap,sendp, RandMAC
 
 class APFaker(plugins.Plugin):
     __author__ = '33197631+dadav@users.noreply.github.com'
-    __version__ = '2.0.0'
+    __version__ = '2.0.1'
     __license__ = 'GPL3'
     __description__ = 'Creates fake aps.'
     __dependencies__ = {
